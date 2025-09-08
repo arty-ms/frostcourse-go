@@ -4,7 +4,7 @@ ingress:
   rules:
     - component: { name: api }
       match: { path: { prefix: / } }
-    - component: { name: publish }    # имя компонента из секции functions
+    - component: { name: publish }
       match: { path: { prefix: /webhook } }
 
 services:
@@ -13,8 +13,8 @@ services:
       repo: arty-ms/frostcourse-go
       branch: master
       deploy_on_push: true
-    source_dir: .
-    dockerfile_path: ./Dockerfile
+    source_dir: ./api
+    dockerfile_path: ./api/Dockerfile
     http_port: 8080
     instance_size_slug: basic-xxs
     instance_count: 1

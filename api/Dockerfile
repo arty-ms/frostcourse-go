@@ -6,14 +6,11 @@ WORKDIR /src
 RUN apk add --no-cache git
 
 # сначала зависимости (лучше кешируется)
-COPY go.mod ./
+COPY ../go.mod ./
 RUN go mod download
 
-# теперь исходники
-COPY . .
+COPY .. .
 
-# ---------- run stage ----------
-# distroless уже содержит CA-сертификаты и юзера nonroot
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -ldflags="-s -w" -o server .
 
