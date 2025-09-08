@@ -25,7 +25,7 @@ functions:
       repo: arty-ms/frostcourse-go
       branch: master
       deploy_on_push: true
-    source_dir: functions
+    source_dir: ./functions
     envs:
       - key: BOT_TOKEN
         scope: RUN_AND_BUILD_TIME
