@@ -12,16 +12,14 @@ RUN go mod download
 # теперь исходники
 COPY . .
 
-# собираем статический бинарник
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go build -ldflags="-s -w" -o app .
-
 # ---------- run stage ----------
 # distroless уже содержит CA-сертификаты и юзера nonroot
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -ldflags="-s -w" -o server .
+
 FROM scratch
 WORKDIR /app
-# нужны корневые сертификаты для HTTPS-запросов
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=build /src/app /app/app
+COPY --from=build /src/server /app/server
 EXPOSE 8080
-ENTRYPOINT ["/app/app"]
+ENTRYPOINT ["/app/server"]

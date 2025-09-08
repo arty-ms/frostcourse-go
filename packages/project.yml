@@ -4,7 +4,7 @@ environment:
   OWNER_IDS: "${OWNER_IDS}"
 
 packages:
-  - name: pub
+  - name: telegram
     functions:
       - name: publish
         runtime: "go:default"
