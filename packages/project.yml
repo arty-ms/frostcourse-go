@@ -1,5 +1,5 @@
 environment:
-  BOT_TOKEN: "${POSTER_BOT_TOKEN}"
+  BOT_TOKEN: "${BOT_TOKEN}"
   CHANNEL_ID: "${CHANNEL_ID}"
   OWNER_IDS: "${OWNER_IDS}"
 

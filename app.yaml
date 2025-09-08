@@ -30,3 +30,9 @@ functions:
       - key: BOT_TOKEN
         scope: RUN_AND_BUILD_TIME
         value: ${POSTER_BOT_TOKEN}
+      - key: CHANNEL_ID
+        scope: RUN_AND_BUILD_TIME
+        value: ${CHANNEL_ID}
+      - key: OWNER_IDS
+        scope: RUN_AND_BUILD_TIME
+        value: ${OWNER_IDS}
