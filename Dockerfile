@@ -6,7 +6,7 @@ WORKDIR /src
 RUN apk add --no-cache git
 
 # сначала зависимости (лучше кешируется)
-COPY go.mod go.sum ./
+COPY go.mod ./
 RUN go mod download
 
 # теперь исходники

@@ -1,0 +1,15 @@
+environment:
+  BOT_TOKEN: "${POSTER_BOT_TOKEN}"
+  CHANNEL_ID: "${CHANNEL_ID}"
+  OWNER_IDS: "${OWNER_IDS}"
+
+packages:
+  - name: pub
+    functions:
+      - name: publish
+        runtime: "go:default"
+        web: true
+        limits:
+          timeout: 10000
+          memory: 256
+          logs: 32
