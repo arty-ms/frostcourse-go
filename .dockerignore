@@ -1,1 +1,5 @@
 ./functions
+app.yaml
+.gitignore
+README.md
+LICENSE.txt

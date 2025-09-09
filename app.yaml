@@ -26,7 +26,7 @@ services:
       repo: arty-ms/frostcourse-go
       branch: master
       deploy_on_push: true
-    source_dir: ./api
+    source_dir: .
     dockerfile_path: ./api/Dockerfile
     http_port: 8080
     instance_size_slug: basic-xxs
