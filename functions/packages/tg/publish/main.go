@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"os"
 )
 
@@ -22,8 +22,8 @@ func Main(in Request) (*Response, error) {
 	want := os.Getenv("WEBHOOK_SECRET")
 	got := ""
 
-	fmt.Printf(want)
-	fmt.Printf("OwHeaders, %s", in.OwHeaders)
+	log.Printf("WEBHOOK_SECRET set: %t", want != "")
+	log.Printf("OwHeaders: %#v", in.OwHeaders)
 	if in.OwHeaders != nil {
 		if v, ok := in.OwHeaders["x-telegram-bot-api-secret-token"]; ok {
 			got = v
