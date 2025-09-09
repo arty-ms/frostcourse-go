@@ -1,5 +1,18 @@
 name: frostcourse
 region: fra
+envs:
+  - key: BOT_TOKEN
+    scope: RUN_AND_BUILD_TIME
+    value: ${BOT_TOKEN}
+  - key: CHANNEL_ID
+    scope: RUN_AND_BUILD_TIME
+    value: ${CHANNEL_ID}
+  - key: OWNER_IDS
+    scope: RUN_AND_BUILD_TIME
+    value: ${OWNER_IDS}
+  - key: WEBHOOK_SECRET
+    scope: RUN_AND_BUILD_TIME
+    value: ${WEBHOOK_SECRET}
 ingress:
   rules:
     - component: { name: api }
@@ -26,16 +39,3 @@ functions:
       branch: master
       deploy_on_push: true
     source_dir: ./functions
-    envs:
-      - key: BOT_TOKEN
-        scope: RUN_AND_BUILD_TIME
-        value: ${BOT_TOKEN}
-      - key: CHANNEL_ID
-        scope: RUN_AND_BUILD_TIME
-        value: ${CHANNEL_ID}
-      - key: OWNER_IDS
-        scope: RUN_AND_BUILD_TIME
-        value: ${OWNER_IDS}
-      - key: WEBHOOK_SECRET
-        scope: RUN_AND_BUILD_TIME
-        value: ${WEBHOOK_SECRET}
