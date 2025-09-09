@@ -36,3 +36,6 @@ functions:
       - key: OWNER_IDS
         scope: RUN_AND_BUILD_TIME
         value: ${OWNER_IDS}
+      - key: WEBHOOK_SECRET
+        scope: RUN_AND_BUILD_TIME
+        value: ${WEBHOOK_SECRET}

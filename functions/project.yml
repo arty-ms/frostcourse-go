@@ -2,6 +2,7 @@ environment:
   BOT_TOKEN: "${BOT_TOKEN}"
   CHANNEL_ID: "${CHANNEL_ID}"
   OWNER_IDS: "${OWNER_IDS}"
+  WEBHOOK_SECRET: "${WEBHOOK_SECRET}"
 
 packages:
   - name: tg
