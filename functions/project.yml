@@ -3,6 +3,8 @@ environment:
   CHANNEL_ID: "${CHANNEL_ID}"
   OWNER_IDS: "${OWNER_IDS}"
   WEBHOOK_SECRET: "${WEBHOOK_SECRET}"
+  LOGGER_TOKEN: "${LOGGER_TOKEN}"
+  INGESTING_HOST: "${INGESTING_HOST}"
 
 packages:
   - name: tg

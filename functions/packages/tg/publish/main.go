@@ -2,8 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"log"
+	"log/slog"
+	_ "log/slog"
 	"os"
+
+	slogbetterstack "github.com/samber/slog-betterstack"
 )
 
 type Request struct {
@@ -22,8 +25,14 @@ func Main(in Request) (*Response, error) {
 	want := os.Getenv("WEBHOOK_SECRET")
 	got := ""
 
-	log.Printf("WEBHOOK_SECRET set: %t", want != "")
-	log.Printf("OwHeaders: %#v", in.OwHeaders)
+	logger := slog.New(
+		slogbetterstack.Option{
+			Token:    "$LOGGER_TOKEN",
+			Endpoint: "https://$INGESTING_HOST/",
+		}.NewBetterstackHandler(),
+	)
+
+	logger.Info("Hello from Function DO!")
 	if in.OwHeaders != nil {
 		if v, ok := in.OwHeaders["x-telegram-bot-api-secret-token"]; ok {
 			got = v
