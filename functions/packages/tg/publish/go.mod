@@ -1,6 +1,6 @@
 module github.com/arty-ms/frostcourse-go/tg-publish
 
-go 1.25.1
+go 1.23
 
 require (
 	github.com/samber/lo v1.47.0 // indirect
