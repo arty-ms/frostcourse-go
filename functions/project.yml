@@ -11,7 +11,7 @@ packages:
   - name: tg
     functions:
       - name: publish
-        runtime: go:default
+        runtime: go:1.20
         web: true
         limits:
           timeout: 10000
