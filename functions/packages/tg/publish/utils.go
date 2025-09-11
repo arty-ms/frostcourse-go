@@ -11,21 +11,18 @@ import (
 	"strings"
 )
 
-func rawJSONFromDO(in Request) ([]byte, error) {
-	// если OpenWhisk положил тело в __ow_body (обычный случай для web=true)
+func rawJSON(in Request) ([]byte, error) {
 	if in.OwBody != "" {
-		// пробуем как обычный текст
-		if strings.HasPrefix(strings.TrimSpace(in.OwBody), "{") {
-			return []byte(in.OwBody), nil
+		s := strings.TrimSpace(in.OwBody)
+		if strings.HasPrefix(s, "{") || strings.HasPrefix(s, "[") {
+			return []byte(s), nil // это уже обычный JSON-текст
 		}
-		// иначе это, скорее всего, base64
-		b, err := base64.StdEncoding.DecodeString(in.OwBody)
-		if err == nil {
+		// пробуем как base64
+		if b, err := base64.StdEncoding.DecodeString(in.OwBody); err == nil {
 			return b, nil
 		}
 		return nil, fmt.Errorf("cannot decode __ow_body")
 	}
-	// fallback: если вдруг body уже пришёл как JSON-объект
 	if len(in.Body) > 0 {
 		return in.Body, nil
 	}

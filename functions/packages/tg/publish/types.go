@@ -51,7 +51,6 @@ type TgSendMessage struct {
 type Request struct {
 	Body      json.RawMessage   `json:"body,omitempty"`
 	OwHeaders map[string]string `json:"__ow_headers,omitempty"`
-	OwQuery   string            `json:"__ow_query,omitempty"`
 	OwBody    string            `json:"__ow_body,omitempty"`
 }
 

@@ -31,12 +31,14 @@ func Main(in Request) (*Response, error) {
 		return &Response{StatusCode: 401, Body: "unauthorized"}, nil
 	}
 
-	raw, err := rawJSONFromDO(in)
+	log.Printf("Request: %s", in)
+
+	raw, err := rawJSON(in)
 	if err != nil {
-		log.Printf("Error found: %s", err)
-		return &Response{StatusCode: 400, Body: "no body"}, nil
+		return &Response{StatusCode: 400, Body: "no body: " + err.Error()}, nil
 	}
 
+	log.Printf("Raw: %s", raw)
 	var upd TgUpdate
 	if err := json.Unmarshal(raw, &upd); err != nil {
 		log.Printf("Error found: %s", err)
