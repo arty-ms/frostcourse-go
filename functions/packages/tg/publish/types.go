@@ -1,7 +1,5 @@
 package main
 
-import "encoding/json"
-
 type TgUpdate struct {
 	UpdateID int        `json:"update_id"`
 	Message  *TgMessage `json:"message,omitempty"`
@@ -48,10 +46,20 @@ type TgSendMessage struct {
 }
 
 // Request and Response from DO middleware
-type Request struct {
-	Body      json.RawMessage   `json:"body,omitempty"`
-	OwHeaders map[string]string `json:"__ow_headers,omitempty"`
-	OwBody    string            `json:"__ow_body,omitempty"`
+type RawRequest struct {
+	HTTP struct {
+		Body            string            `json:"body"`
+		Headers         map[string]string `json:"headers"`
+		IsBase64Encoded bool              `json:"isBase64Encoded"`
+		Method          string            `json:"method"`
+		Path            string            `json:"path"`
+		QueryString     string            `json:"queryString"`
+	} `json:"http"`
+
+	BotToken      string `json:"BOT_TOKEN"`
+	ChannelID     string `json:"CHANNEL_ID"`
+	OwnerIDs      string `json:"OWNER_IDS"`
+	WebhookSecret string `json:"WEBHOOK_SECRET"`
 }
 
 type Response struct {

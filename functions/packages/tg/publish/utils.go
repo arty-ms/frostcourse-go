@@ -11,24 +11,6 @@ import (
 	"strings"
 )
 
-func rawJSON(in Request) ([]byte, error) {
-	if in.OwBody != "" {
-		s := strings.TrimSpace(in.OwBody)
-		if strings.HasPrefix(s, "{") || strings.HasPrefix(s, "[") {
-			return []byte(s), nil // это уже обычный JSON-текст
-		}
-		// пробуем как base64
-		if b, err := base64.StdEncoding.DecodeString(in.OwBody); err == nil {
-			return b, nil
-		}
-		return nil, fmt.Errorf("cannot decode __ow_body")
-	}
-	if len(in.Body) > 0 {
-		return in.Body, nil
-	}
-	return nil, fmt.Errorf("empty body")
-}
-
 func parseOwnerIDs(raw string) map[int64]bool {
 	m := map[int64]bool{}
 	for _, p := range strings.Split(raw, ",") {
@@ -93,4 +75,23 @@ func sendMessageStr(chatIDStr string, text string) error {
 		return fmt.Errorf("telegram status %d", resp.StatusCode)
 	}
 	return nil
+}
+
+func header(h map[string]string, name string) string {
+	for k, v := range h {
+		if strings.EqualFold(k, name) {
+			return v
+		}
+	}
+	return ""
+}
+
+func getRawBody(req RawRequest) ([]byte, error) {
+	if req.HTTP.Body == "" {
+		return nil, fmt.Errorf("empty body")
+	}
+	if req.HTTP.IsBase64Encoded {
+		return base64.StdEncoding.DecodeString(req.HTTP.Body)
+	}
+	return []byte(req.HTTP.Body), nil
 }

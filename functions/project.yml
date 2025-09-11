@@ -12,7 +12,7 @@ packages:
     functions:
       - name: publish
         runtime: go:1.20
-        web: true
+        web: raw
         limits:
           timeout: 10000
           memory: 256
