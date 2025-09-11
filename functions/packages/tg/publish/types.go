@@ -1,5 +1,7 @@
 package main
 
+import "encoding/json"
+
 type TgUpdate struct {
 	UpdateID int        `json:"update_id"`
 	Message  *TgMessage `json:"message,omitempty"`
@@ -8,6 +10,7 @@ type TgUpdate struct {
 type TgMessage struct {
 	MessageID int        `json:"message_id"`
 	Text      string     `json:"text,omitempty"`
+	Date      int64      `json:"date"` // unix
 	From      *TgUser    `json:"from,omitempty"`
 	Chat      TgChat     `json:"chat"`
 	Entities  []TgEntity `json:"entities,omitempty"`
@@ -18,7 +21,8 @@ type TgUser struct {
 	ID int64 `json:"id"`
 }
 type TgChat struct {
-	ID int64 `json:"id"`
+	ID   int64  `json:"id"`
+	Type string `json:"type"` // "private", "group", "supergroup", "channel"
 }
 
 type TgEntity struct {
@@ -44,11 +48,15 @@ type TgSendMessage struct {
 }
 
 // Request and Response from DO middleware
-//type Request struct {
-//	Body json.RawMessage `json:"body,omitempty"`
-//}
-//type Response struct {
-//	StatusCode int               `json:"statusCode,omitempty"`
-//	Headers    map[string]string `json:"headers,omitempty"`
-//	Body       string            `json:"body,omitempty"`
-//}
+type Request struct {
+	Body      json.RawMessage   `json:"body,omitempty"`
+	OwHeaders map[string]string `json:"__ow_headers,omitempty"`
+	OwQuery   string            `json:"__ow_query,omitempty"`
+	OwBody    string            `json:"__ow_body,omitempty"`
+}
+
+type Response struct {
+	StatusCode int               `json:"statusCode,omitempty"`
+	Headers    map[string]string `json:"headers,omitempty"`
+	Body       string            `json:"body,omitempty"`
+}
