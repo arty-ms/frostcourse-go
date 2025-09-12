@@ -25,15 +25,6 @@ func parseOwnerIDs(raw string) map[int64]bool {
 	return m
 }
 
-func hasCmd(s, cmd string) bool {
-	// допускаем "/cmd" или "/cmd@botname"
-	if !strings.HasPrefix(s, cmd) {
-		return false
-	}
-	rest := s[len(cmd):]
-	return rest == "" || rest[0] == ' ' || rest[0] == '@'
-}
-
 func extractPayload(s string) string {
 	// поддерживает "/cmd payload" и "/cmd\npayload"
 	if i := strings.IndexAny(s, " \n"); i >= 0 && i+1 < len(s) {

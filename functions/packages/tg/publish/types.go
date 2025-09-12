@@ -1,5 +1,12 @@
 package main
 
+type Ctx struct {
+	BotToken     string
+	PubChannelID string
+	ApiUrl       string
+	BotChannelID int64
+}
+
 type TgUpdate struct {
 	UpdateID int        `json:"update_id"`
 	Message  *TgMessage `json:"message,omitempty"`

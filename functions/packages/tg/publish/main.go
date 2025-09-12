@@ -9,22 +9,14 @@ import (
 
 var (
 	botToken      = os.Getenv("BOT_TOKEN")
-	channelIDStr  = os.Getenv("CHANNEL_ID") // например "-1001234567890"
+	channelIDStr  = os.Getenv("CHANNEL_ID")
 	apiURL        = "https://api.telegram.org/bot" + botToken
 	webhookSecret = os.Getenv("WEBHOOK_SECRET")
 	ownerIDs      = parseOwnerIDs(os.Getenv("OWNER_IDS"))
-	// anti-replay
-	//maxSkew = 2 * time.Minute
 )
 
 // Main Entrypoint for DO function
 func Main(req RawRequest) (*Response, error) {
-
-	log.Printf("botToken: %s", botToken)
-	log.Printf("channelIDStr: %s", channelIDStr)
-	log.Printf("apiURL: %s", channelIDStr)
-	log.Printf("webhookSecret: %s", webhookSecret)
-	log.Printf("ownerIDs: %s", ownerIDs)
 	providedApiSecret := header(req.HTTP.Headers, "x-telegram-bot-api-secret-token")
 	if providedApiSecret == "" || providedApiSecret != webhookSecret {
 		return &Response{StatusCode: 401, Body: "unauthorized"}, nil
@@ -48,52 +40,26 @@ func Main(req RawRequest) (*Response, error) {
 
 	chatID := upd.Message.Chat.ID
 	userID := upd.Message.From.ID
-	text := strings.TrimSpace(upd.Message.Text)
+	message := strings.TrimSpace(upd.Message.Text)
 
 	if !ownerIDs[userID] {
 		_ = sendMessage(chatID, "⛔ Нет доступа")
 		return &Response{StatusCode: 200, Body: "forbidden"}, nil
 	}
 
-	//ts := time.Unix(upd.Message.Date, 0)
-	//if time.Since(ts) > maxSkew || time.Until(ts) > maxSkew {
-	//	return &Response{StatusCode: 200, Body: "stale"}, nil
-	//}
-
-	//if upd.Message.Chat.Type != "private" {
-	//	return &Response{StatusCode: 200, Body: "forbidden"}, nil
-	//}
-	if !ownerIDs[upd.Message.From.ID] {
-		_ = sendMessage(chatID, "⛔ Нет доступа.")
-		return &Response{StatusCode: 200, Body: "forbidden"}, nil
+	ctx := &Ctx{
+		BotToken:     botToken,
+		BotChannelID: chatID,
+		PubChannelID: channelIDStr,
+		ApiUrl:       apiURL,
 	}
 
-	switch {
-	case hasCmd(text, "/start"):
-		_ = sendMessage(chatID, "👋 Готов словить твой новый пост")
+	err = processMessage(ctx, message)
 
-	case hasCmd(text, "/preview"):
-		body := extractPayload(text)
-		if body == "" {
-			_ = sendMessage(chatID, "⚠️ Пришли `/preview текст`")
-			break
-		}
-		_ = sendMessage(chatID, "🔎 Preview:\n\n"+body)
+	if err != nil {
+		log.Printf("Error while processing message: %s", err)
 
-	case hasCmd(text, "/publish"):
-		body := extractPayload(text)
-		if body == "" {
-			_ = sendMessage(chatID, "⚠️ Пришли `/publish текст`")
-			break
-		}
-		if err := sendMessageStr(channelIDStr, body); err != nil {
-			_ = sendMessage(chatID, "❌ Ошибка публикации: "+err.Error())
-		} else {
-			_ = sendMessage(chatID, "✅ Опубликовано в канал")
-		}
-
-	default:
-		_ = sendMessage(upd.Message.Chat.ID, "ℹ️ Доступные команды: /start, /preview, /publish")
+		return &Response{StatusCode: 500, Body: "Internal Error"}, nil
 	}
 
 	return &Response{StatusCode: 200, Body: "ok"}, nil
