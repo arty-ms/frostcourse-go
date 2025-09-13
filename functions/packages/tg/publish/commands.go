@@ -70,3 +70,16 @@ var commands = map[Command]Handler{
 		SuccessText: "✅ Опубликовано в канал",
 	}},
 }
+
+func sendForbiddenMessage(ctx *Ctx) error {
+	return sendMessage(ctx.BotChannelID, "⛔ Нет доступа")
+}
+
+func sendHelpMessage(ctx *Ctx) error {
+	helpText := "ℹ️ Доступные команды:\n" +
+		"/start - начать работу с ботом\n" +
+		"/preview <текст> - посмотреть, как будет выглядеть пост\n" +
+		"/publish <текст> - опубликовать пост в канал"
+
+	return sendMessage(ctx.BotChannelID, helpText)
+}

@@ -1,10 +1,13 @@
 package main
 
 type Ctx struct {
-	BotToken     string
-	PubChannelID string
-	ApiUrl       string
-	BotChannelID int64
+	BotToken      string
+	PubChannelID  string
+	UserID        int64
+	BotChannelID  int64
+	Message       string
+	WebhookSecret string
+	OwnerIDsMap   map[int64]bool
 }
 
 type TgUpdate struct {

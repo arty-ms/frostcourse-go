@@ -2,6 +2,20 @@ package main
 
 import "strings"
 
+// processMessage processes an incoming message and executes the corresponding command.
+func processMessage(ctx *Ctx, message string) error {
+	cmd := parseCommand(message)
+
+	currentCommand, ok := commands[Command(cmd)]
+
+	if !ok {
+		return sendHelpMessage(ctx)
+	}
+
+	return currentCommand.Run(ctx, message)
+}
+
+// parseCommand extracts the command from the message text.
 func parseCommand(s string) string {
 	s = strings.TrimSpace(s)
 	if s == "" || s[0] != '/' {
@@ -16,16 +30,4 @@ func parseCommand(s string) string {
 		}
 	}
 	return s
-}
-
-func processMessage(ctx *Ctx, message string) error {
-	cmd := parseCommand(message)
-
-	currentCommand, ok := commands[Command(cmd)]
-
-	if !ok {
-		return sendMessage(ctx.BotChannelID, "ℹ️ Доступные команды: /start, /preview, /publish")
-	}
-
-	return currentCommand.Run(ctx, message)
 }

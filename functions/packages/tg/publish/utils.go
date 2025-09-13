@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -26,7 +28,7 @@ func parseOwnerIDs(raw string) map[int64]bool {
 }
 
 func extractPayload(s string) string {
-	// поддерживает "/cmd payload" и "/cmd\npayload"
+	// supports /command <payload>
 	if i := strings.IndexAny(s, " \n"); i >= 0 && i+1 < len(s) {
 		return strings.TrimSpace(s[i+1:])
 	}
@@ -85,4 +87,35 @@ func getRawBody(req RawRequest) ([]byte, error) {
 		return base64.StdEncoding.DecodeString(req.HTTP.Body)
 	}
 	return []byte(req.HTTP.Body), nil
+}
+
+func getInitialContext() *Ctx {
+	botToken := os.Getenv("BOT_TOKEN")
+	pubChannelId := os.Getenv("CHANNEL_ID")
+	webhookSecret := os.Getenv("WEBHOOK_SECRET")
+	ownersIds := os.Getenv("OWNER_IDS")
+
+	if botToken == "" {
+		log.Panic("Error: BOT_TOKEN is not set")
+	}
+
+	if pubChannelId == "" {
+		log.Panic("Error: CHANNEL_ID is not set")
+	}
+	if webhookSecret == "" {
+		log.Panic("Error: WEBHOOK_SECRET is not set")
+	}
+
+	if ownersIds == "" {
+		log.Panic("Error: OWNER_IDS is not set")
+	}
+
+	ownersIdsMap := parseOwnerIDs(ownersIds)
+
+	return &Ctx{
+		BotToken:      botToken,
+		PubChannelID:  pubChannelId,
+		WebhookSecret: webhookSecret,
+		OwnerIDsMap:   ownersIdsMap,
+	}
 }
