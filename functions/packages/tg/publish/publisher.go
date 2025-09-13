@@ -30,6 +30,16 @@ type TgSendMessage struct {
 	ReplyMarkup           interface{} `json:"reply_markup,omitempty"`
 }
 
+type TgResponse struct {
+	OK          bool   `json:"ok"`
+	Description string `json:"description,omitempty"`
+	Parameters  *struct {
+		RetryAfter      int   `json:"retry_after,omitempty"`
+		MigrateToChatID int64 `json:"migrate_to_chat_id,omitempty"`
+	} `json:"parameters,omitempty"`
+	Result json.RawMessage `json:"result,omitempty"`
+}
+
 type MessageSenderHandler interface {
 	sendMessage(ctx *Ctx, messageBytes *bytes.Reader) error
 	postMessage(ctx *Ctx, channelId int64, messageBytes *bytes.Reader) error
@@ -39,21 +49,42 @@ type MessageSenderHandler interface {
 type Publisher struct{}
 
 func (p *Publisher) sendMessage(ctx *Ctx, messageBytes []byte) error {
-	resp, err := http.Post(ctx.APIUrl+"/sendMessage", "application/json", bytes.NewReader(messageBytes))
-
+	req, err := http.NewRequest("POST", ctx.APIUrl+"/sendMessage", bytes.NewReader(messageBytes))
 	if err != nil {
 		return err
 	}
+	req.Header.Set("Content-Type", "application/json")
 
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			fmt.Println("failed to close response body:", err)
+	resp, err := ctx.HTTP.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+
+	if resp.StatusCode >= 400 {
+		var tr TgResponse
+		_ = json.Unmarshal(respBody, &tr)
+		desc := tr.Description
+		if desc == "" {
+			desc = string(respBody)
 		}
-	}(resp.Body)
+		if resp.StatusCode == http.StatusTooManyRequests && tr.Parameters != nil && tr.Parameters.RetryAfter > 0 {
+			return fmt.Errorf("telegram 429, retry_after=%ds: %s", tr.Parameters.RetryAfter, desc)
+		}
+		return fmt.Errorf("telegram http %d: %s", resp.StatusCode, desc)
+	}
 
-	if resp.StatusCode >= 300 {
-		return fmt.Errorf("telegram status %d", resp.StatusCode)
+	var tr TgResponse
+	if err := json.Unmarshal(respBody, &tr); err != nil {
+		return fmt.Errorf("telegram bad json: %w", err)
+	}
+	if !tr.OK {
+		if tr.Parameters != nil && tr.Parameters.RetryAfter > 0 {
+			return fmt.Errorf("telegram error (retry_after=%ds): %s", tr.Parameters.RetryAfter, tr.Description)
+		}
+		return fmt.Errorf("telegram error: %s", tr.Description)
 	}
 	return nil
 }

@@ -1,5 +1,7 @@
 package main
 
+import "net/http"
+
 type Ctx struct {
 	BotToken      string
 	PubChannelID  int64
@@ -10,6 +12,7 @@ type Ctx struct {
 	OwnerIDsMap   map[int64]bool
 	WebAppURL     string
 	APIUrl        string
+	HTTP          *http.Client
 }
 
 type TgUpdate struct {

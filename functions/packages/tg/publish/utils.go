@@ -4,9 +4,11 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func parseOwnerIDs(raw string) map[int64]bool {
@@ -90,5 +92,6 @@ func getInitialContext() *Ctx {
 		OwnerIDsMap:   ownersIdsMap,
 		WebAppURL:     webAppURL,
 		APIUrl:        "https://api.telegram.org/bot" + botToken,
+		HTTP:          &http.Client{Timeout: 10 * time.Second},
 	}
 }
