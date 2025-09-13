@@ -10,7 +10,7 @@ type Ctx struct {
 	Message       string
 	WebhookSecret string
 	OwnerIDsMap   map[int64]bool
-	WebAppURL     string
+	WebAppBotName string
 	APIUrl        string
 	HTTP          *http.Client
 }

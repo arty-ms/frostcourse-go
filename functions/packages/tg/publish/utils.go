@@ -57,7 +57,7 @@ func getInitialContext() *Ctx {
 	pubChannelIdStr := os.Getenv("CHANNEL_ID")
 	webhookSecret := os.Getenv("WEBHOOK_SECRET")
 	ownersIds := os.Getenv("OWNER_IDS")
-	webAppURL := os.Getenv("MINI_APP_URL")
+	WebAppBotName := os.Getenv("WEB_APP_BOT_NAME")
 
 	if botToken == "" {
 		log.Panic("Error: BOT_TOKEN is not set")
@@ -74,8 +74,8 @@ func getInitialContext() *Ctx {
 		log.Panic("Error: OWNER_IDS is not set")
 	}
 
-	if webAppURL == "" {
-		log.Panic("Error: MINI_APP_URL is not set")
+	if WebAppBotName == "" {
+		log.Panic("Error: WEB_APP_BOT_NAME is not set")
 	}
 
 	pubChannelId, err := strconv.ParseInt(pubChannelIdStr, 10, 64)
@@ -90,7 +90,7 @@ func getInitialContext() *Ctx {
 		PubChannelID:  pubChannelId,
 		WebhookSecret: webhookSecret,
 		OwnerIDsMap:   ownersIdsMap,
-		WebAppURL:     webAppURL,
+		WebAppBotName: WebAppBotName,
 		APIUrl:        "https://api.telegram.org/bot" + botToken,
 		HTTP:          &http.Client{Timeout: 10 * time.Second},
 	}

@@ -124,16 +124,16 @@ func (p *TextWithMarkupPublisher) postMessage(ctx *Ctx, channelId int64, message
 }
 
 func (p *TextWithMarkupPublisher) preparePayload(ctx *Ctx, channelId int64, messageText string) ([]byte, error) {
-	if ctx.WebAppURL == "" {
-		return nil, fmt.Errorf("web app url is empty")
+	if ctx.WebAppBotName == "" {
+		return nil, fmt.Errorf("web app bot name is empty")
 	}
 
 	markup := InlineKeyboardMarkup{
 		InlineKeyboard: [][]InlineKeyboardButton{
 			{
 				{
-					Text:   "Подробнее",
-					WebApp: &WebAppInfo{Url: ctx.WebAppURL},
+					Text: "Подробнее",
+					Url:  fmt.Sprintf("https://t.me/%s?startapp=%s", ctx.WebAppBotName, "payload123"),
 				},
 			},
 		},
