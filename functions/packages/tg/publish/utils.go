@@ -1,13 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -35,41 +31,6 @@ func extractPayload(s string) string {
 	return ""
 }
 
-func sendMessage(chatID int64, text string) error {
-	return sendMessageStr(strconv.FormatInt(chatID, 10), text)
-}
-
-func sendMessageStr(chatIDStr string, text string) error {
-	id, err := strconv.ParseInt(chatIDStr, 10, 64)
-	if err != nil {
-		return fmt.Errorf("bad chat id")
-	}
-
-	req := TgSendMessage{
-		ChatID:    id,
-		Text:      text,
-		ParseMode: "Markdown",
-	}
-	b, _ := json.Marshal(req)
-	resp, err := http.Post(apiURL+"/sendMessage", "application/json", bytes.NewReader(b))
-
-	if err != nil {
-		return err
-	}
-
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			fmt.Println("failed to close response body:", err)
-		}
-	}(resp.Body)
-
-	if resp.StatusCode >= 300 {
-		return fmt.Errorf("telegram status %d", resp.StatusCode)
-	}
-	return nil
-}
-
 func header(h map[string]string, name string) string {
 	for k, v := range h {
 		if strings.EqualFold(k, name) {
@@ -91,15 +52,16 @@ func getRawBody(req RawRequest) ([]byte, error) {
 
 func getInitialContext() *Ctx {
 	botToken := os.Getenv("BOT_TOKEN")
-	pubChannelId := os.Getenv("CHANNEL_ID")
+	pubChannelIdStr := os.Getenv("CHANNEL_ID")
 	webhookSecret := os.Getenv("WEBHOOK_SECRET")
 	ownersIds := os.Getenv("OWNER_IDS")
+	webAppURL := os.Getenv("MINI_APP_URL")
 
 	if botToken == "" {
 		log.Panic("Error: BOT_TOKEN is not set")
 	}
 
-	if pubChannelId == "" {
+	if pubChannelIdStr == "" {
 		log.Panic("Error: CHANNEL_ID is not set")
 	}
 	if webhookSecret == "" {
@@ -110,6 +72,15 @@ func getInitialContext() *Ctx {
 		log.Panic("Error: OWNER_IDS is not set")
 	}
 
+	if webAppURL == "" {
+		log.Panic("Error: MINI_APP_URL is not set")
+	}
+
+	pubChannelId, err := strconv.ParseInt(pubChannelIdStr, 10, 64)
+	if err != nil {
+		log.Panicf("Error: invalid CHANNEL_ID: %v", err)
+	}
+
 	ownersIdsMap := parseOwnerIDs(ownersIds)
 
 	return &Ctx{
@@ -117,5 +88,7 @@ func getInitialContext() *Ctx {
 		PubChannelID:  pubChannelId,
 		WebhookSecret: webhookSecret,
 		OwnerIDsMap:   ownersIdsMap,
+		WebAppURL:     webAppURL,
+		APIUrl:        "https://api.telegram.org/bot" + botToken,
 	}
 }

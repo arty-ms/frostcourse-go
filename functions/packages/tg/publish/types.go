@@ -2,12 +2,14 @@ package main
 
 type Ctx struct {
 	BotToken      string
-	PubChannelID  string
+	PubChannelID  int64
 	UserID        int64
 	BotChannelID  int64
 	Message       string
 	WebhookSecret string
 	OwnerIDsMap   map[int64]bool
+	WebAppURL     string
+	APIUrl        string
 }
 
 type TgUpdate struct {
@@ -37,22 +39,6 @@ type TgEntity struct {
 	Offset int    `json:"offset"`
 	Length int    `json:"length"`
 	Type   string `json:"type"`
-}
-
-type InlineKeyboardMarkup struct {
-	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
-}
-type InlineKeyboardButton struct {
-	Text string `json:"text"`
-	URL  string `json:"url,omitempty"`
-}
-
-type TgSendMessage struct {
-	ChatID                int64       `json:"chat_id"`
-	Text                  string      `json:"text"`
-	ParseMode             string      `json:"parse_mode,omitempty"`
-	DisableWebPagePreview bool        `json:"disable_web_page_preview,omitempty"`
-	ReplyMarkup           interface{} `json:"reply_markup,omitempty"`
 }
 
 // Request and Response from DO middleware
