@@ -1,5 +1,7 @@
 package main
 
+import "log"
+
 type Command string
 
 type Handler interface {
@@ -73,7 +75,9 @@ func (c *PublishWithLinkCommand) Run(ctx *Ctx, message string) error {
 	}
 
 	if err := c.postMessage(ctx, ctx.PubChannelID, body); err != nil {
-		_ = c.postMessage(ctx, ctx.BotChannelID, c.ErrorText+err.Error())
+		log.Printf("Error while publishing with inline button: %s", err)
+
+		return c.postMessage(ctx, ctx.BotChannelID, c.ErrorText+err.Error())
 	}
 
 	return c.postMessage(ctx, ctx.BotChannelID, c.SuccessText)
