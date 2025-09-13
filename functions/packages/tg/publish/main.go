@@ -9,12 +9,11 @@ func Main(req RawRequest) (*Response, error) {
 	// Add botToken to ApiUrl
 	apiURL += ctx.BotToken
 
-	// Handlers execution direction is from the bottom to top
 	handler := Chain(
 		MainLogic,
-		AuthorizeMW(),
-		ParseTGMessageMW(),
 		AuthenticateMW(),
+		ParseTGMessageMW(),
+		AuthorizeMW(),
 	)
 
 	return handler(ctx, req)

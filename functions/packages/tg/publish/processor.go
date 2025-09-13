@@ -3,8 +3,8 @@ package main
 import "strings"
 
 // processMessage processes an incoming message and executes the corresponding command.
-func processMessage(ctx *Ctx, message string) error {
-	cmd := parseCommand(message)
+func processMessage(ctx *Ctx) error {
+	cmd := parseCommand(ctx.Message)
 
 	currentCommand, ok := commands[Command(cmd)]
 
@@ -12,7 +12,7 @@ func processMessage(ctx *Ctx, message string) error {
 		return sendHelpMessage(ctx)
 	}
 
-	return currentCommand.Run(ctx, message)
+	return currentCommand.Run(ctx, ctx.Message)
 }
 
 // parseCommand extracts the command from the message text.

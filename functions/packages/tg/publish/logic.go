@@ -9,7 +9,7 @@ import (
 type WrappedHandler func(ctx *Ctx, req RawRequest) (*Response, error)
 type Middleware func(WrappedHandler) WrappedHandler
 
-// Chain applies middlewares to a handler in the reverse order they are provided.
+// Chain applies middlewares to a handler in the order they are provided.
 func Chain(h WrappedHandler, ms ...Middleware) WrappedHandler {
 	for i := len(ms) - 1; i >= 0; i-- {
 		h = ms[i](h)
