@@ -19,7 +19,7 @@ func Chain(h WrappedHandler, ms ...Middleware) WrappedHandler {
 
 // MainLogic is the main logic for processing messages.
 func MainLogic(ctx *Ctx, _ RawRequest) (*Response, error) {
-	if err := processMessage(ctx, ctx.Message); err != nil {
+	if err := processMessage(ctx); err != nil {
 		log.Printf("Error while processing message: %s", err)
 
 		return &Response{StatusCode: 500, Body: "Internal Error"}, nil
